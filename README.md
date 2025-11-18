@@ -25,7 +25,13 @@ Zero dependencies, DIP-compliant, ~95% test coverage.
 {
   "jedi-knights/yoda.nvim-adapters",
   lazy = false,
-  priority = 1000, -- Load early (other plugins may depend on it)
+  priority = 1000,
+  config = function()
+    require("yoda-adapters").setup({
+      notification_backend = "snacks",
+      picker_backend = "telescope",
+    })
+  end,
 }
 ```
 
@@ -34,12 +40,29 @@ Zero dependencies, DIP-compliant, ~95% test coverage.
 ```lua
 use {
   'jedi-knights/yoda.nvim-adapters',
+  config = function()
+    require("yoda-adapters").setup({
+      notification_backend = "snacks",
+      picker_backend = "telescope",
+    })
+  end,
 }
 ```
 
 ---
 
 ## 🚀 Usage
+
+### Setup
+
+```lua
+require("yoda-adapters").setup({
+  notification_backend = "snacks",
+  picker_backend = "telescope",
+})
+```
+
+**Note:** Setup is optional. If not called, backends will be auto-detected.
 
 ### Notification Adapter
 
@@ -104,16 +127,26 @@ picker.set_backend("telescope")
 
 ## ⚙️ Configuration
 
-### Override Backend Detection
-
-You can force a specific backend by setting global variables:
+### Setup Options
 
 ```lua
--- Force notification backend
-vim.g.yoda_notify_backend = "snacks"  -- Options: "noice", "snacks", "native"
+require("yoda-adapters").setup({
+  notification_backend = "snacks",
+  picker_backend = "telescope",
+})
+```
 
--- Force picker backend
-vim.g.yoda_picker_backend = "telescope"  -- Options: "snacks", "telescope", "native"
+**Options:**
+- `notification_backend` (string|nil): Force notification backend (`"noice"`, `"snacks"`, `"native"`)
+- `picker_backend` (string|nil): Force picker backend (`"snacks"`, `"telescope"`, `"native"`)
+
+### Alternative: Global Variables
+
+You can also force a specific backend by setting global variables:
+
+```lua
+vim.g.yoda_notify_backend = "snacks"
+vim.g.yoda_picker_backend = "telescope"
 ```
 
 ### Backend Priority (Auto-Detection)

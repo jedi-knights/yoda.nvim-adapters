@@ -14,18 +14,18 @@ function M.setup(opts)
   end
 
   opts = opts or {}
-  
+
   config.notification_backend = opts.notification_backend
   config.picker_backend = opts.picker_backend
-  
+
   if config.notification_backend then
     vim.g.yoda_notify_backend = config.notification_backend
   end
-  
+
   if config.picker_backend then
     vim.g.yoda_picker_backend = config.picker_backend
   end
-  
+
   setup_called = true
 end
 
