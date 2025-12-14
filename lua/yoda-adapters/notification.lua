@@ -7,14 +7,29 @@ local M = {}
 -- Private state (perfect encapsulation through closure)
 local backend = nil
 local initialized = false
+local rtp_cache_key = nil
 
 -- ============================================================================
 -- Backend Detection
 -- ============================================================================
 
+--- Get RTP cache key for invalidation on plugin changes
+--- @return string RTP key
+local function get_rtp_key()
+  return vim.o.rtp
+end
+
 --- Initialize and detect notification backend (with encapsulation guard)
 --- @return string Backend name ("noice", "snacks", or "native")
 local function detect_backend()
+  -- Check if RTP has changed (plugin install/uninstall)
+  local current_rtp = get_rtp_key()
+  if rtp_cache_key and rtp_cache_key ~= current_rtp then
+    backend = nil
+    initialized = false
+    rtp_cache_key = nil
+  end
+
   -- Return cached backend if already detected (singleton behavior)
   if backend and initialized then
     return backend
@@ -25,6 +40,7 @@ local function detect_backend()
   if user_backend then
     backend = user_backend
     initialized = true
+    rtp_cache_key = current_rtp
     return backend
   end
 
@@ -33,6 +49,7 @@ local function detect_backend()
   if ok and noice.notify then
     backend = "noice"
     initialized = true
+    rtp_cache_key = current_rtp
     return backend
   end
 
@@ -41,12 +58,14 @@ local function detect_backend()
   if ok_snacks and snacks.notify then
     backend = "snacks"
     initialized = true
+    rtp_cache_key = current_rtp
     return backend
   end
 
   -- Fallback to native
   backend = "native"
   initialized = true
+  rtp_cache_key = current_rtp
   return backend
 end
 
